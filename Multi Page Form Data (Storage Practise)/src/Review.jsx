@@ -10,13 +10,13 @@ const Review = () => {
   const preferences = JSON.parse(sessionStorage.getItem('preferences')) || {};
 
   const handlePrev = () => {
-    navigate('/preferences'); // Navigate back to the preferences page
+    navigate('/preferences'); 
   };
 
   const handleSubmit = () => {
     alert('Form submitted successfully!');
-    sessionStorage.clear(); // Clear sessionStorage after submission
-    navigate('/'); // Navigate back to the home page
+    sessionStorage.clear(); 
+    navigate('/'); 
   };
 
   return (
