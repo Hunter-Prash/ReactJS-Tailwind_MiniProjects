@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 
 const Address = () => {
   const navigate = useNavigate();
-  const [formData,setFormData]=useState({
-    city:'',
-    country:'',
-    zip:''
+  const [formData,setFormData]=useState(()=>{
+    const saved=sessionStorage.getItem('address')
+    if(saved)return JSON.parse(saved)
+    else return {city:'',country:'',zip:''}
   })
 
 
@@ -44,6 +44,7 @@ const handleSubmit=(e)=>{
             type="text"
             id="city"
             name="city"
+            value={formData.city}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -56,6 +57,7 @@ const handleSubmit=(e)=>{
             type="text"
             id="country"
             name="country"
+            value={formData.country}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -68,6 +70,7 @@ const handleSubmit=(e)=>{
             type="text"
             id="zip"
             name="zip"
+            value={formData.zip}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
           />

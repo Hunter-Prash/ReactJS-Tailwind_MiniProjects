@@ -2,14 +2,17 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: ''
-  })
+const [formData, setFormData] = useState(() => {
+  const saved = sessionStorage.getItem('personal info')
+  if (saved) {
+    return JSON.parse(saved)         
+  } else {
+    return { name: '', email: '', phone: '' }
+  }
+})
 
   const navigate=useNavigate()
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
