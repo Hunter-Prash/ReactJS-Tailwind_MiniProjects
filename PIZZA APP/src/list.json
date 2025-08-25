@@ -1,0 +1,13 @@
+{
+    "sizes": [
+      { "id": "small", "label": "Small", "price": 8.0, "selected": false },
+      { "id": "medium", "label": "Medium", "price": 10.0, "selected": false },
+      { "id": "large", "label": "Large", "price": 12.0, "selected": false }
+    ],
+    "toppings": [
+      { "id": "pepperoni", "label": "🍕 Pepperoni", "price": 1.5, "selected": false },
+      { "id": "mushrooms", "label": "🍄 Mushrooms", "price": 1.0, "selected": false },
+      { "id": "olives", "label": "🫒 Olives", "price": 0.75, "selected": false }
+    ],
+    "totalPrice": 0.0
+}
