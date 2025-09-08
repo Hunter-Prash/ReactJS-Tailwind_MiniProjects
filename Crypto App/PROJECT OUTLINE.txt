@@ -1,0 +1,64 @@
+Part 1 – ReactJS + Tailwind + APIs + Storage
+
+You want practice with:
+
+✅ Fetching API data
+
+✅ Select all / select individual radio buttons
+
+✅ Multipage navigation with persistence (sessionStorage)
+
+✅ Local file saving
+
+👉 Here’s a concrete practice mini-app you could build:
+
+📌 Crypto Portfolio Tracker (Local Demo Version)
+
+Page 1 (Coins List):
+
+Fetch live crypto data from a free API like CoinGecko
+.
+
+Show list of top 50 coins with name, price, % change.
+
+Add radio buttons next to each coin.
+
+Practice “Select All” vs “Select Individual” for coins to watch.
+
+Page 2 (My Watchlist):
+
+The selected coins persist using sessionStorage (so refresh doesn’t lose them).
+
+Show only the selected coins here.
+
+Page 3 (Export):
+
+Add a button to save the watchlist as a JSON file locally (download.json).
+
+Later, this same file upload feature can be wired to AWS S3.
+
+Part 2 – AWS SDK + S3 + DynamoDB + EC2
+
+You want AWS practice:
+
+✅ Upload/download with S3
+
+✅ Use DynamoDB (free tier is perfect for small data)
+
+✅ SSH into EC2
+
+👉 Extend the same app into a cloud-enabled version:
+
+📌 Crypto Portfolio Tracker (AWS Version)
+
+Replace local JSON download with Upload to S3 bucket.
+
+Example: "user123_watchlist.json" is stored in S3.
+
+Use DynamoDB to store user preferences (like which coins are favorited).
+
+Deploy backend API (Node/Express) on EC2 and practice SSH into it.
+
+Example endpoint: /api/watchlist → stores/retrieves from DynamoDB.
+
+Your React app calls your EC2 backend instead of talking to DynamoDB directly.
