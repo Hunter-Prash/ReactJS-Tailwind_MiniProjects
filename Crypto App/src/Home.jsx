@@ -2,17 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Home = ({ coins }) => {
+  console.log(coins);
+
   // Initialize selected with sessionStorage
   const [selected, setSelected] = useState(() => {
     return JSON.parse(sessionStorage.getItem('list')) || [];
   });
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
+
   // Theme state (saved in sessionStorage)
   const [theme, setTheme] = useState(() => {
     const saved = JSON.parse(sessionStorage.getItem('theme'));
     return saved === null ? false : true;
   });
+
+  // **NEW state for rendering coins**
+  const [displayCoins, setDisplayCoins] = useState([...coins]);
 
   // Handle single checkbox
   const handleChange = (idx, e) => {
@@ -27,7 +33,7 @@ const Home = ({ coins }) => {
   const handleAll = (e) => {
     if (e.target.checked) {
       const allIndexes = [];
-      for (let i = 0; i < coins.length; i++) {
+      for (let i = 0; i < displayCoins.length; i++) {
         allIndexes.push(i);
       }
       setSelected(allIndexes);
@@ -36,10 +42,28 @@ const Home = ({ coins }) => {
     }
   };
 
+  // Navigate to watchlist page
   const handleNavigate = () => {
     let temp = selected;
     sessionStorage.setItem('list', JSON.stringify(temp));
-    navigate('/watchlist')
+    navigate('/watchlist');
+  };
+
+  // **Sort handler**
+  const handleSort = (e) => {
+    const value = e.target.value;
+    let sortedCoins = [...displayCoins];
+
+    if (value === 'percent_change') {
+      sortedCoins.sort(
+        (a, b) =>
+          a.market_cap_change_percentage_24h - b.market_cap_change_percentage_24h
+      );
+    } else if (value === 'market_cap_change') {
+      sortedCoins.sort((a, b) => a.market_cap_change_24h - b.market_cap_change_24h);
+    }
+
+    setDisplayCoins(sortedCoins); // Update state to re-render
   };
 
   return (
@@ -50,7 +74,7 @@ const Home = ({ coins }) => {
           : 'min-h-screen bg-white text-gray-900 p-6'
       }
     >
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 space-x-4">
         <h1 className="text-3xl font-bold">Top 10 Cryptos</h1>
 
         {/* Theme toggle */}
@@ -68,10 +92,30 @@ const Home = ({ coins }) => {
         {/* View Watchlist button with styling */}
         <button
           onClick={handleNavigate}
-          className="px-4 py-2 ml-4 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition shadow-md hover:shadow-lg"
+          className="px-4 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition shadow-md hover:shadow-lg"
         >
           View Watchlist
         </button>
+
+        {/* Sort Dropdown */}
+        <div className="flex items-center space-x-2">
+          <label
+            htmlFor="crypto"
+            className="text-gray-700 dark:text-gray-300 font-medium"
+          >
+            Sort
+          </label>
+          <select
+            id="crypto"
+            name="crypto"
+            onChange={handleSort} // Trigger sorting
+            className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 dark:text-gray-200 dark:bg-gray-800 transition"
+          >
+            <option value="">Select</option>
+            <option value="percent_change">% Change</option>
+            <option value="market_cap_change">Market Cap Change</option>
+          </select>
+        </div>
       </div>
 
       {/* Select All checkbox */}
@@ -79,7 +123,7 @@ const Home = ({ coins }) => {
         <label className="flex items-center space-x-2">
           <input
             type="checkbox"
-            checked={selected.length === coins.length && coins.length > 0}
+            checked={selected.length === displayCoins.length && displayCoins.length > 0}
             onChange={handleAll}
             className="h-5 w-5 text-blue-500 focus:ring-2 focus:ring-blue-400 rounded"
           />
@@ -87,8 +131,9 @@ const Home = ({ coins }) => {
         </label>
       </div>
 
+      {/* Display coins */}
       <div className="space-y-4 max-w-3xl mx-auto">
-        {coins.map((item, idx) => (
+        {displayCoins.map((item, idx) => (
           <div
             key={idx}
             className={
