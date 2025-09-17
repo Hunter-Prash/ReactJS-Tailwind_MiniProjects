@@ -2,7 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Home = ({ coins }) => {
-  console.log(coins);
+  //console.log(coins);
+
+  // **NEW state for rendering coins**
+  const [displayCoins, setDisplayCoins] = useState([]);
+
+    //Fix: Sync displayCoins with fetched coins
+  useEffect(() => {
+    setDisplayCoins(coins);
+  }, [coins]);
+
+
 
   // Initialize selected with sessionStorage
   const [selected, setSelected] = useState(() => {
@@ -10,6 +20,7 @@ const Home = ({ coins }) => {
   });
 
   const navigate = useNavigate();
+  const [value,setValue]=useState('')
 
   // Theme state (saved in sessionStorage)
   const [theme, setTheme] = useState(() => {
@@ -17,8 +28,14 @@ const Home = ({ coins }) => {
     return saved === null ? false : true;
   });
 
-  // **NEW state for rendering coins**
-  const [displayCoins, setDisplayCoins] = useState([...coins]);
+
+  useEffect(() => {
+  const filtered = coins.filter(coin =>
+    coin.name.toLowerCase().includes(value.toLowerCase())
+  );
+  setDisplayCoins(filtered);
+}, [value]);
+
 
   // Handle single checkbox
   const handleChange = (idx, e) => {
@@ -66,6 +83,9 @@ const Home = ({ coins }) => {
     setDisplayCoins(sortedCoins); // Update state to re-render
   };
 
+
+
+
   return (
     <div
       className={
@@ -97,6 +117,20 @@ const Home = ({ coins }) => {
           View Watchlist
         </button>
 
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            placeholder="Search coins..."
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 transition w-48"
+          />
+
+        </div>
+
+
+
         {/* Sort Dropdown */}
         <div className="flex items-center space-x-2">
           <label
@@ -117,7 +151,7 @@ const Home = ({ coins }) => {
           </select>
         </div>
       </div>
-
+  
       {/* Select All checkbox */}
       <div className="mb-4">
         <label className="flex items-center space-x-2">
