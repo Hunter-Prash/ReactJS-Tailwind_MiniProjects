@@ -1,0 +1,2 @@
+# In your repo root, edit .gitignore
+Credentials/DynamoDB.env

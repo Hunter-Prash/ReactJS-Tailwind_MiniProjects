@@ -1,0 +1,46 @@
+import React, { useState } from "react";
+import "./styles.css";
+
+export default function App() {
+  // Define state variables for the input value and the list of items
+  const [value, setValue] = useState("");
+  const [items, setItems] = useState([]);
+
+  // Define the click event handler for adding an item to the list
+  const handleClick = (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Update the items state by adding the current value to the list
+    setItems([...items, value]);
+
+    // Clear the input field by setting its value to an empty string
+    setValue("");
+  };
+
+  let updatedData = [];
+  const handleDelete = (e) => {
+    e.preventDefault();
+    updatedData = items.slice(0, items.length - 1);
+    setItems(updatedData);
+  };
+
+  return (
+    <div className="App">
+      <form>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <button onClick={handleClick}>Add</button>
+        <button onClick={handleDelete}>Delete</button>
+      </form>
+
+      {items.map((item, i) => (
+        <ul key={i}>
+          <li>{item}</li>
+        </ul>
+      ))}
+    </div>
+  );
+}
