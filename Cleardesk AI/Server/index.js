@@ -1,5 +1,6 @@
 import express from 'express';
-import loginRoute from './routes/loginRoute.js'
+import registerRoute from './routes/registerRoute.js'
+import updateRoute from './routes/updateRoute.js'
 const app = express();
 
 
@@ -9,8 +10,8 @@ app.get('/', (req, res) => {
   res.send('HII from backend');
 });
 
-app.use('/api',loginRoute)
-
+app.use('/api',registerRoute)
+app.use('/api',updateRoute)
 
 
 const PORT = process.env.PORT || 5000;

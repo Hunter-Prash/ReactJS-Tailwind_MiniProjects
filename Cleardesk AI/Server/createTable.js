@@ -39,4 +39,3 @@ async function createTable() {
 
 createTable()
 
-//dfaihnadnifadhni

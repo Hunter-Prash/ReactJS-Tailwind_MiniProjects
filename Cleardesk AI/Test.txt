@@ -1,0 +1,13 @@
+{
+ "email":"maryjane23@gmail.com",
+ "password": "HStyles",
+ "phone":"+1 2356489",
+ "country":"United States"
+}
+
+
+{
+ "email":"rajaji.prashant@gmail.com",
+ "password": "M@nu0902"
+}
+
