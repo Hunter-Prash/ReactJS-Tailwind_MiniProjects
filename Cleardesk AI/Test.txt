@@ -8,6 +8,6 @@
 
 {
  "email":"rajaji.prashant@gmail.com",
- "password": "M@nu0902"
+ "password": "Xyko_112"
 }
 

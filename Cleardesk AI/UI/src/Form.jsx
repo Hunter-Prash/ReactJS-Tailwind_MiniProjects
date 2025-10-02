@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 const Form = ({ theme }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,8 @@ const Form = ({ theme }) => {
     phone: '',
     country: 'IN',
   });
+
+  const navigate=useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,9 +27,20 @@ const Form = ({ theme }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log(formData);
+    //console.log(formData);
+    try{
+      let response=await axios.post('http://localhost:5000/api/register',formData)
+      console.log(response.data)
+
+      if (response.data.userData){
+        navigate('/dashboard')
+      }
+    }catch(err){
+      console.log(err)
+    }
+    
   };
 
   return (
