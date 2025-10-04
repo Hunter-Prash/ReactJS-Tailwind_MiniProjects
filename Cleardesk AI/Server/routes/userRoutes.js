@@ -10,10 +10,9 @@ import {
   GetCommand,
   UpdateCommand,
   DeleteCommand,
-  ScanCommand
+  ScanCommand,
 } from "@aws-sdk/lib-dynamodb";
-import jwt from 'jsonwebtoken'
-
+import jwt from "jsonwebtoken";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,7 +23,17 @@ dotenv.config({
 
 const router = express.Router();
 
-//CREATE USER
+// Initialize DynamoDB client ONCE and reuse
+const client = new DynamoDBClient({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+const docClient = DynamoDBDocumentClient.from(client);
+
+// CREATE USER
 router.post("/register", async (req, res) => {
   try {
     const { email, password, phone, country } = req.body;
@@ -32,15 +41,6 @@ router.post("/register", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ message: "Email & password are required" });
     }
-
-    const client = new DynamoDBClient({
-      region: process.env.AWS_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-    });
-    const docClient = DynamoDBDocumentClient.from(client);
 
     // Check if user already exists
     const getCmd = new GetCommand({
@@ -53,7 +53,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    
     const hashedPassword = await bcrypt.hash(password, 10);
     const putCmd = new PutCommand({
       TableName: "Users",
@@ -66,36 +65,23 @@ router.post("/register", async (req, res) => {
       message: "User registered successfully",
       userData: { email, Phone: phone, Country: country },
     });
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: `/register failed: ${err}` });
   }
 });
 
-
-// Read (Get User by Email)
+// READ (Get User by Email)
 router.get("/read", async (req, res) => {
   try {
-    const { email } = req.query;//get this as url parameter
+    const { email } = req.query;
 
-    const client = new DynamoDBClient({
-      region: process.env.AWS_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-    });
-    const docClient = DynamoDBDocumentClient.from(client);
-     
     let response;
 
     if (email) {
-      // Get a single user by primary key
-
       const command = new GetCommand({
         TableName: "Users",
-        Key: { email: email },
+        Key: { email },
       });
 
       response = await docClient.send(command);
@@ -104,23 +90,11 @@ router.get("/read", async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
 
-        //if AUTHENTICATION successful generate JWT
-        const token=jwt.sign({email:email},
-        process.env.JWT_SECRET,
-        {expiresIn:'20m'}
-      )
-      return res.status(200).json({ user: response.Item,  jwt:token});
-    } 
-    
-    
-    else {
-      // Scan entire table (expensive for large tables!)
-      const command = new ScanCommand({
-        TableName: "Users",
-      });
-
+      return res.status(200).json({ user: response.Item, jwt: token });
+    } else {
+      // Scan all users
+      const command = new ScanCommand({ TableName: "Users" });
       response = await docClient.send(command);
-
       return res.status(200).json({ users: response.Items });
     }
   } catch (err) {
@@ -129,23 +103,16 @@ router.get("/read", async (req, res) => {
   }
 });
 
-// Update User
+// UPDATE USER
 router.post("/update", async (req, res) => {
   try {
     const { email, password, phone, country } = req.body;
 
     if (!email) {
-      return res.status(400).json({ message: "Email (key) is required to update user" });
+      return res
+        .status(400)
+        .json({ message: "Email (key) is required to update user" });
     }
-
-    const client = new DynamoDBClient({
-      region: process.env.AWS_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-    });
-    const docClient = DynamoDBDocumentClient.from(client);
 
     let hashedPassword;
     const updateExpressionParts = [];
@@ -172,7 +139,9 @@ router.post("/update", async (req, res) => {
     }
 
     if (updateExpressionParts.length === 0) {
-      return res.status(400).json({ message: "No attributes provided to update." });
+      return res
+        .status(400)
+        .json({ message: "No attributes provided to update." });
     }
 
     const updateExpression = `set ${updateExpressionParts.join(", ")}`;
@@ -188,30 +157,26 @@ router.post("/update", async (req, res) => {
 
     const response = await docClient.send(command);
 
-    return res.status(200).json({ message: "User updated successfully", updatedUser: response.Attributes });
+    return res.status(200).json({
+      message: "User updated successfully",
+      updatedUser: response.Attributes,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: `/update failed: ${err}` });
   }
 });
 
-// Delete User
+// DELETE USER
 router.delete("/delete", async (req, res) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ message: "Email is required to delete user" });
+      return res
+        .status(400)
+        .json({ message: "Email is required to delete user" });
     }
-
-    const client = new DynamoDBClient({
-      region: process.env.AWS_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-    });
-    const docClient = DynamoDBDocumentClient.from(client);
 
     const command = new DeleteCommand({
       TableName: "Users",
@@ -222,13 +187,61 @@ router.delete("/delete", async (req, res) => {
     const response = await docClient.send(command);
 
     if (!response.Attributes) {
-      return res.status(404).json({ message: "User not found, nothing deleted" });
+      return res
+        .status(404)
+        .json({ message: "User not found, nothing deleted" });
     }
 
-    return res.status(200).json({ message: "User deleted successfully", deletedUser: response.Attributes });
+    return res.status(200).json({
+      message: "User deleted successfully",
+      deletedUser: response.Attributes,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: `/delete failed: ${err}` });
+  }
+});
+
+
+// LOGIN HANDLER
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are mandatory' });
+    }
+
+    const command = new GetCommand({
+      TableName: "Users",
+      Key: { email },
+    });
+
+    const response = await docClient.send(command);
+
+    if (!response.Item) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(password, response.Item.Password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "20m",
+    });
+
+    return res.status(200).json({
+      message: "Login successful",
+      user: { email },
+      jwt: token,
+    });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).json({ message: `/login failed: ${err.message}` });
   }
 });
 

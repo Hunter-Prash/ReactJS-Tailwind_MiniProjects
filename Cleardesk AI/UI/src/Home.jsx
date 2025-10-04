@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Form from './Form';
+import LoginForm from './LoginForm';
 
 const Home = () => {
   const [theme, setTheme] = useState(() => {
@@ -8,6 +9,7 @@ const Home = () => {
   });
 
   const [showForm, setShowForm] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const handleThemeClick = () => {
     const temp = !theme;
@@ -16,7 +18,13 @@ const Home = () => {
   };
 
   const handleRegister = () => {
-    setShowForm(prev => !prev);
+    setShowForm((prev) => !prev);
+    setShowLogin(false);
+  };
+
+  const handleLogin = () => {
+    setShowLogin((prev) => !prev);
+    setShowForm(false);
   };
 
   return (
@@ -36,6 +44,12 @@ const Home = () => {
             Sign-Up
           </button>
           <button
+            onClick={handleLogin}
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
+          >
+            Login
+          </button>
+          <button
             onClick={handleThemeClick}
             className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
           >
@@ -49,7 +63,7 @@ const Home = () => {
         {/* Background Content */}
         <div
           className={`w-full transition-all duration-300 ${
-            showForm ? 'filter blur-sm opacity-50 pointer-events-none' : ''
+            showForm || showLogin ? 'filter blur-sm opacity-50 pointer-events-none' : ''
           }`}
         >
           <p className="text-center text-lg mb-6">
@@ -57,10 +71,17 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Form Overlay */}
+        {/* Sign-Up Form Overlay */}
         {showForm && (
           <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
-            <Form />
+            <Form theme={theme} />
+          </div>
+        )}
+
+        {/* Login Form Overlay */}
+        {showLogin && (
+          <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
+            <LoginForm theme={theme} />
           </div>
         )}
       </main>

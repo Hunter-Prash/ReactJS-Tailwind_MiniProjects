@@ -5,9 +5,41 @@
  "country":"United States"
 }
 
-
 {
  "email":"rajaji.prashant@gmail.com",
  "password": "Xyko_112"
 }
 
+
+
+
+
+
+
+
+Accessing Protected Routes
+
+Whenever the frontend needs to fetch protected data (e.g., dashboard data), it sends the JWT in the Authorization header:
+
+Authorization: Bearer <JWT>
+
+
+Backend validates the token:
+
+If valid → allows access.
+
+If expired or invalid → returns a 401 Unauthorized response.
+
+3. Handling Expired JWT on Frontend
+
+On the frontend, whenever you make an API request:
+
+Check the response status.
+
+If status is 401 Unauthorized:
+
+Show a message like "Session expired, please login again."
+
+Clear the JWT from localStorage.
+
+Redirect the user to the login page.
