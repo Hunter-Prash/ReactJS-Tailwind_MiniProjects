@@ -2,271 +2,161 @@
   {
     "id": 1,
     "title": "Login not working",
-    "description": "User cannot log in with correct credentials",
+    "description": "User cannot log in with correct credentials. After submitting the username and password, the page refreshes without error, but the user is redirected back to the login screen. No error message is displayed on the UI. This has been reported by three different users today.",
     "status": "open",
-    "priority": "high",
     "createdAt": "2025-10-01T09:15:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 2,
     "title": "Page loading slowly",
-    "description": "Dashboard page takes too long to load",
+    "description": "The main dashboard page, which shows the ticket list, takes consistently over 15 seconds to load. The console shows a long wait on the `/api/tickets/open` endpoint. This is impacting all agents' productivity.",
     "status": "open",
-    "priority": "medium",
     "createdAt": "2025-10-01T10:05:00Z",
     "assignedTo": "agent2"
   },
   {
     "id": 3,
     "title": "Error 500 on payment",
-    "description": "Payment API returns error 500 intermittently",
+    "description": "The third-party payment API endpoint `/api/payment/process` returns an HTTP 500 status code approximately 20% of the time during peak hours (10 AM - 2 PM UTC). The error logs indicate a timeout in the database connection on our end, but the root cause is unclear.",
     "status": "in_progress",
-    "priority": "high",
     "createdAt": "2025-10-01T10:30:00Z",
     "assignedTo": "agent3"
   },
   {
     "id": 4,
     "title": "Forgot password email not received",
-    "description": "Users are not receiving reset password emails",
+    "description": "Users who click the 'Forgot Password' link successfully see the confirmation message, but the reset email never arrives. We have checked the email logs and there's no record of the email being sent. This is preventing users from accessing their accounts.",
     "status": "open",
-    "priority": "medium",
     "createdAt": "2025-10-01T11:00:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 5,
     "title": "Profile picture upload fails",
-    "description": "Uploading profile picture throws an error",
+    "description": "When attempting to upload a new profile picture (JPG or PNG, less than 2MB), the progress bar stops at 99%, and eventually an 'Upload Failed: Server Error' message is displayed. The backend logs show an issue with image resizing/storage.",
     "status": "resolved",
-    "priority": "low",
     "createdAt": "2025-10-01T11:15:00Z",
     "assignedTo": "agent2"
   },
   {
     "id": 6,
     "title": "Notification emails not sent",
-    "description": "System does not send notification emails for new tickets",
+    "description": "The system is currently failing to send any automated notification emails, specifically for new ticket assignments or status changes. The mail queue is backing up, and we are not seeing any outgoing SMTP connection attempts in the logs.",
     "status": "open",
-    "priority": "high",
     "createdAt": "2025-10-01T11:45:00Z",
     "assignedTo": "agent3"
   },
   {
     "id": 7,
     "title": "Unable to reset 2FA",
-    "description": "Users cannot reset two-factor authentication",
+    "description": "Users who are locked out of their accounts due to a lost two-factor authentication device are unable to use the 'Reset 2FA' form. Submitting the form results in a 'User Not Authorized' error, and manual intervention is required.",
     "status": "in_progress",
-    "priority": "high",
     "createdAt": "2025-10-01T12:05:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 8,
     "title": "Search returns no results",
-    "description": "Searching for tickets returns empty even when tickets exist",
+    "description": "The global search bar consistently returns an empty list, even when searching for ticket IDs or exact titles known to exist. This affects both the main search page and the dashboard quick search. This seems to be a recent regression.",
     "status": "open",
-    "priority": "medium",
     "createdAt": "2025-10-01T12:20:00Z",
     "assignedTo": "agent2"
   },
   {
     "id": 9,
     "title": "Cannot download invoice",
-    "description": "Invoice PDF download fails",
+    "description": "When a user clicks the 'Download PDF' button for any invoice, the request to `/api/invoice/download/1234` immediately fails with a network error. The console shows a broken connection, and no file is ever downloaded. The issue is persistent across all browsers.",
     "status": "resolved",
-    "priority": "medium",
     "createdAt": "2025-10-01T12:45:00Z",
     "assignedTo": "agent3"
   },
   {
     "id": 10,
     "title": "Page crashes on mobile",
-    "description": "Mobile version of dashboard crashes on load",
+    "description": "The mobile version of the dashboard, when viewed on small screen sizes (below 600px), crashes the browser tab after 5-10 seconds of loading. This is happening on both iOS and Android devices, suggesting a memory leak or a complex rendering issue.",
     "status": "open",
-    "priority": "high",
     "createdAt": "2025-10-01T13:00:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 11,
     "title": "Cannot change password",
-    "description": "Change password functionality does not work",
+    "description": "The 'Change Password' form in the user settings always returns the generic error 'An unexpected error occurred' regardless of whether the old password is correct. Users cannot update their credentials.",
     "status": "open",
-    "priority": "medium",
     "createdAt": "2025-10-01T13:15:00Z",
     "assignedTo": "agent2"
   },
   {
     "id": 12,
     "title": "Missing ticket history",
-    "description": "Ticket history is not showing previous updates",
+    "description": "For tickets older than one week, the 'History' tab within the ticket detail view shows a blank page. The API endpoint for fetching history is returning an empty array for old tickets, despite database records showing numerous comments and status changes.",
     "status": "in_progress",
-    "priority": "high",
     "createdAt": "2025-10-01T13:30:00Z",
     "assignedTo": "agent3"
   },
   {
     "id": 13,
     "title": "Error while exporting CSV",
-    "description": "Export CSV feature fails with error",
+    "description": "The 'Export All Tickets to CSV' feature fails with a '504 Gateway Timeout' error when the dataset is large (over 10,000 tickets). Smaller exports work fine, indicating a performance issue with the bulk data query or serialization.",
     "status": "open",
-    "priority": "low",
     "createdAt": "2025-10-01T13:45:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 14,
     "title": "Incorrect ticket count",
-    "description": "Dashboard shows wrong number of open tickets",
+    "description": "The number displayed next to 'Open Tickets' on the main dashboard is inaccurate. It is currently showing 15, but a manual filter on the ticket list shows 18 open tickets. The aggregation query appears to be miscounting or excluding certain statuses.",
     "status": "resolved",
-    "priority": "medium",
     "createdAt": "2025-10-01T14:00:00Z",
     "assignedTo": "agent2"
   },
   {
     "id": 15,
     "title": "Attachment not visible",
-    "description": "Uploaded attachment does not appear in ticket",
+    "description": "A user successfully uploads a file (e.g., `screenshot.png`) to a ticket. The upload indicator confirms success, but the attachment never appears in the ticket's attachment list. The file is also not found in the file storage system, suggesting a failure after the initial upload.",
     "status": "open",
-    "priority": "medium",
     "createdAt": "2025-10-01T14:15:00Z",
     "assignedTo": "agent3"
   },
   {
     "id": 16,
     "title": "Slow page refresh",
-    "description": "Ticket list refreshes slowly on dashboard",
+    "description": "When an agent updates a ticket's status or priority, the ticket list on the dashboard takes 5-7 seconds to refresh, even if only a single ticket was modified. The whole page reload is triggered, instead of just updating the relevant row.",
     "status": "in_progress",
-    "priority": "low",
     "createdAt": "2025-10-01T14:30:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 17,
     "title": "Cannot add new ticket",
-    "description": "Add ticket form fails silently",
+    "description": "The 'New Ticket' submission form fails silently. After clicking 'Submit', the button state changes to 'Loading' indefinitely, and no new ticket is created in the database. No error is logged on the frontend, but the API request eventually times out.",
     "status": "open",
-    "priority": "high",
     "createdAt": "2025-10-01T14:45:00Z",
     "assignedTo": "agent2"
   },
   {
     "id": 18,
     "title": "Priority not saved",
-    "description": "Changing priority does not update ticket",
+    "description": "When an agent attempts to change a ticket's priority from 'Medium' to 'High' and saves the ticket, the UI briefly shows 'High' but upon refreshing the page, it reverts to 'Medium'. The database is not being updated correctly.",
     "status": "open",
-    "priority": "medium",
     "createdAt": "2025-10-01T15:00:00Z",
     "assignedTo": "agent3"
   },
   {
     "id": 19,
     "title": "Cannot assign ticket",
-    "description": "Assigning ticket to agent fails",
+    "description": "The dropdown for assigning a ticket to an agent fails to update the ticket record. The API call to `/api/tickets/assign` returns a '403 Forbidden' error, even though the agent making the change has administrator privileges.",
     "status": "resolved",
-    "priority": "high",
     "createdAt": "2025-10-01T15:15:00Z",
     "assignedTo": "agent1"
   },
   {
     "id": 20,
     "title": "Search autocomplete not working",
-    "description": "Autocomplete does not suggest tickets",
+    "description": "In the main search bar, typing three or more characters used to trigger an autocomplete dropdown with matching ticket titles and IDs. This functionality has stopped working, and no suggestions appear, making quick navigation difficult.",
     "status": "open",
-    "priority": "low",
     "createdAt": "2025-10-01T15:30:00Z",
     "assignedTo": "agent2"
-  },
-  {
-    "id": 21,
-    "title": "Ticket filter resets",
-    "description": "Filters reset when page reloads",
-    "status": "in_progress",
-    "priority": "medium",
-    "createdAt": "2025-10-01T15:45:00Z",
-    "assignedTo": "agent3"
-  },
-  {
-    "id": 22,
-    "title": "Cannot archive ticket",
-    "description": "Archive button does not work",
-    "status": "open",
-    "priority": "low",
-    "createdAt": "2025-10-01T16:00:00Z",
-    "assignedTo": "agent1"
-  },
-  {
-    "id": 23,
-    "title": "Notifications delayed",
-    "description": "Ticket notifications are delayed by 10 minutes",
-    "status": "open",
-    "priority": "medium",
-    "createdAt": "2025-10-01T16:15:00Z",
-    "assignedTo": "agent2"
-  },
-  {
-    "id": 24,
-    "title": "Ticket details not visible",
-    "description": "Clicking on ticket does not show details",
-    "status": "in_progress",
-    "priority": "high",
-    "createdAt": "2025-10-01T16:30:00Z",
-    "assignedTo": "agent3"
-  },
-  {
-    "id": 25,
-    "title": "Cannot delete ticket",
-    "description": "Delete ticket API returns error",
-    "status": "resolved",
-    "priority": "medium",
-    "createdAt": "2025-10-01T16:45:00Z",
-    "assignedTo": "agent1"
-  },
-  {
-    "id": 26,
-    "title": "Comments not saved",
-    "description": "Adding comment does not persist",
-    "status": "open",
-    "priority": "low",
-    "createdAt": "2025-10-01T17:00:00Z",
-    "assignedTo": "agent2"
-  },
-  {
-    "id": 27,
-    "title": "Cannot upload attachments",
-    "description": "Attachments fail to upload intermittently",
-    "status": "in_progress",
-    "priority": "high",
-    "createdAt": "2025-10-01T17:15:00Z",
-    "assignedTo": "agent3"
-  },
-  {
-    "id": 28,
-    "title": "Ticket tags not applied",
-    "description": "Tags do not save on ticket update",
-    "status": "open",
-    "priority": "medium",
-    "createdAt": "2025-10-01T17:30:00Z",
-    "assignedTo": "agent1"
-  },
-  {
-    "id": 29,
-    "title": "Cannot mark ticket as resolved",
-    "description": "Resolve button does not work",
-    "status": "open",
-    "priority": "high",
-    "createdAt": "2025-10-01T17:45:00Z",
-    "assignedTo": "agent2"
-  },
-  {
-    "id": 30,
-    "title": "UI not responsive",
-    "description": "Dashboard UI breaks on small screens",
-    "status": "resolved",
-    "priority": "medium",
-    "createdAt": "2025-10-01T18:00:00Z",
-    "assignedTo": "agent3"
   }
 ]
