@@ -4,34 +4,60 @@ import axios from 'axios';
 const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\tickets.json';
 const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-const final = [];
-
 async function nlp(ticket) {
     try {
         const response = await axios.post('http://localhost:8100/nlp', ticket);
-        console.log(response.data);
-        return response.data; // return the result
+        return response.data;
     } catch (err) {
-        console.log(err.message);
+        console.error('NLP error:', err.message);
         return null;
     }
 }
 
 async function processTickets() {
     const BATCH_SIZE = 5;
+
     for (let i = 0; i < allTickets.length; i += BATCH_SIZE) {
         const currBatch = allTickets.slice(i, i + BATCH_SIZE);
+        const processedBatch = [];
 
-        for (let ticket of currBatch) {
-            const result = await nlp(ticket); // wait for the NLP response
-            if (result) {
-                final.push(result); // store response in final
-            }
+
+        for (const ticket of currBatch) {
+            const result = await nlp(ticket);
+            if (result) processedBatch.push(result);
         }
+
+        // Send current batch to Gemini
+        try {
+            const response = await axios.post('http://localhost:8100/chat', {
+                prompt: JSON.stringify(processedBatch)
+            });
+
+            //Basically, your AI response is a string containing JSON, not a JSON object yet.so it contains lot of \n and other esacpe characters..
+            //so we need to parse it..
+            
+            let rawReply = response.data.reply;
+
+            // Remove Markdown-style ```json if present
+            rawReply = rawReply.replace(/^```json\s*/, '').replace(/```$/, '');
+
+            // Parse string to object
+            const parsedReply = JSON.parse(rawReply);
+
+            console.log(parsedReply);  // "Login Error with Correct Credentials"
+
+            //console.log(response.data);
+            console.log('===========================');
+            console.log('AI processing complete for batch');
+        } catch (err) {
+            console.error('Gemini error:', err.response?.data || err.message);
+        }
+
+        // reset between batches
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    console.log('All tickets processed:', final.length);
+    console.log('=======All tickets processed.=======');
 }
 
-// Run the process
 processTickets();

@@ -40,7 +40,6 @@ For every ticket, generate a JSON object with exactly the following structure:
       "assignedTo": "<string>"
   },
   "sentiment": "<positive|neutral|negative|angry|frustrated>",
-  "rootCause": "<string>",
 }
 
 Instructions:
@@ -48,6 +47,7 @@ Instructions:
 2. Base summary, sentiment, rootCause entirely on the ticket content.
 3. Maintain original id, title, status, createdAt, and assignedTo.
 4. Include all fields even if some are empty; do not omit any.
+5. You will get tickets in batches of a particular size so respond to each ticket with the above structure
 """
     )
 )
@@ -64,6 +64,10 @@ class TicketRequest(BaseModel):
     status: str
     createdAt: str
     assignedTo: str
+    
+class ChatRequest(BaseModel):
+    prompt:str
+
 
 @app.get("/")
 def root():
@@ -109,6 +113,18 @@ def handle_nlp(request: TicketRequest):
             "assignedTo": request.assignedTo
         }
     }
+
+@app.post('/chat')
+def handleChat(request:ChatRequest):
+    full_reply = ""
+    # Send the prompt from Node.js
+    response_stream = chat.send_message_stream(request.prompt)
+
+    # Concatenate streamed chunks
+    for chunk in response_stream:
+        full_reply += chunk.text
+
+    return {"reply": full_reply.strip()}
 
 
 # Run server if this script is executed directly
