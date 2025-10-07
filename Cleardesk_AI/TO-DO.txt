@@ -1,0 +1,13 @@
+
+
+Fetch tickets from S3 (your dummy source).
+
+Send tickets to Gemini → get classification results.
+
+Decide which user should own each ticket (this is your logic). For example:
+    round-robin among support agents
+
+
+Attach userId or userEmail to the Gemini response.
+
+Store the ticket in DynamoDB in the tickets table.
