@@ -71,7 +71,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// READ (Get User by Email)
+// READ 
 router.get("/read", async (req, res) => {
   try {
     const { email } = req.query;
@@ -169,6 +169,7 @@ router.post("/update", async (req, res) => {
 
 // DELETE USER
 router.delete("/delete", async (req, res) => {
+  
   try {
     const { email } = req.body;
 

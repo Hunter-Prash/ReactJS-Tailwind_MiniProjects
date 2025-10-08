@@ -1,8 +1,13 @@
 import fs from 'fs';
 import axios from 'axios';
+import dotenv from "dotenv";
+
+
 
 const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\tickets.json';
 const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+ let finalresponse=[]//to store the response of all tickets after processing
+ let allusers=[]// variable to store total number of support agents by scanning all users in the dynamo db table
 
 async function nlp(ticket) {
     try {
@@ -16,6 +21,10 @@ async function nlp(ticket) {
 
 async function processTickets() {
     const BATCH_SIZE = 5;
+
+    //fetching all users from dynamo db
+    let response=await axios.get('http://localhost:5000/api/read')
+    allusers=response.data?.users
 
     for (let i = 0; i < allTickets.length; i += BATCH_SIZE) {
         const currBatch = allTickets.slice(i, i + BATCH_SIZE);
@@ -33,7 +42,7 @@ async function processTickets() {
                 prompt: JSON.stringify(processedBatch)
             });
 
-            //Basically, your AI response is a string containing JSON, not a JSON object yet.so it contains lot of \n and other esacpe characters..
+            //Basically,  AI response is a string containing JSON, not a JSON object yet.so it contains lot of \n and other esacpe characters..
             //so we need to parse it..
             
             let rawReply = response.data.reply;
@@ -44,7 +53,8 @@ async function processTickets() {
             // Parse string to object
             const parsedReply = JSON.parse(rawReply);
 
-            console.log(parsedReply);  // "Login Error with Correct Credentials"
+            console.log(parsedReply); 
+            finalresponse.push(parsedReply)
 
             //console.log(response.data);
             console.log('===========================');
@@ -59,5 +69,18 @@ async function processTickets() {
 
     console.log('=======All tickets processed.=======');
 }
-
 processTickets();
+
+finalresponse = finalresponse.flat();
+
+//round-robin the tickets among support agents
+let c=0
+for(let i=0;i<finalresponse.length;i++){
+    finalresponse[i]['userQueue']=allusers[c].email //adding a new attribute to the gemini response
+    c=c+1
+    if(c>=allusers.length){
+        c=c%allusers.length //keep cycling among the users i.e support agents
+    }
+}
+
+export default finalresponse;
