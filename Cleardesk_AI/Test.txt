@@ -12,7 +12,12 @@
 
 
 
-
+{
+ "email":"pctechtalks@gmail.com",
+ "password": "HStyles2",
+ "phone":"+1 555−123−4567",
+ "country":"United States"
+}
 
 
 

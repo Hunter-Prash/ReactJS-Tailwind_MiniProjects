@@ -1,13 +1,9 @@
 
+SQS thing
 
-Fetch tickets from S3 (your dummy source).
+Consider using 
+an exported async function (getFinalTickets()) that returns the processed tickets.
 
-Send tickets to Gemini → get classification results.
+2️⃣ Automate processTickets.js execution
 
-Decide which user should own each ticket (this is your logic). For example:
-    round-robin among support agents
-
-
-Attach userId or userEmail to the Gemini response.
-
-Store the ticket in DynamoDB in the tickets table.
+Instead of running it manually, you can make it run automatically whenever your app starts or at a schedule.

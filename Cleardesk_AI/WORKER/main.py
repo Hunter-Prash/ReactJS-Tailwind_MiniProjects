@@ -27,7 +27,6 @@ You are an AI assistant that analyzes customer support tickets.
 For every ticket, generate a JSON object with exactly the following structure:
 
 {
-  "id": <integer>,
   "title": "<string>",
   "summary": "<string>",
   "classification": {
@@ -37,7 +36,6 @@ For every ticket, generate a JSON object with exactly the following structure:
   "metadata": {
       "status": "<string>",
       "createdAt": "<ISO8601 timestamp>",
-      "assignedTo": "<string>"
   },
   "sentiment": "<positive|neutral|negative|angry|frustrated>",
 }

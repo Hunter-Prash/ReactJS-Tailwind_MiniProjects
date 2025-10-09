@@ -5,7 +5,8 @@ import {
   DynamoDBDocumentClient,
   BatchWriteCommand
 } from "@aws-sdk/lib-dynamodb";
-import finalresponse from "./payloadBuilder.js";
+import dotenv from "dotenv";
+import processTickets from './processTickets.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +25,8 @@ const client = new DynamoDBClient({
   },
 });
 const docClient = DynamoDBDocumentClient.from(client);
+
+const finalresponse = await processTickets();//fetch the processed tickets
 
 
 //store the final tickets in a new dynamo db table called 'Tickets'
