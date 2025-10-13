@@ -1,13 +1,10 @@
+// This is the producer code for the SQS queue I am pushing the messages to the queue
+
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+import dotenv from "dotenv";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  DynamoDBDocumentClient,
-  BatchWriteCommand
-} from "@aws-sdk/lib-dynamodb";
-import dotenv from "dotenv";
-import processTickets from './processTickets.js';
-
+import processTickets from "./processTickets.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,63 +14,39 @@ dotenv.config({
 });
 
 
-const client = new DynamoDBClient({
+
+
+const client = new SQSClient({
   region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const finalresponse = await processTickets();//fetch the processed tickets
+})
 
 
-//store the final tickets in a new dynamo db table called 'Tickets'
-//this table is created via the aws console
+const queue_url = 'https://sqs.ap-south-1.amazonaws.com/345594574524/ProcessedTicketsQueue'
 
-// We are sending the tickets in chunks or batches to Dynamodb to reduce the network calls
-const chunks = [];
-for (let i = 0; i < finalresponse.length; i += 10) {
-  chunks.push(finalresponse.slice(i, i + 10));
-}
+const tickets = await processTickets()
 
-async function uploadTickets() {
-  for (const batch of chunks) {
+// upload the tickets to the queue
+async function pushTicketsToQueue() {
+  try {
+    for (let i = 0; i < tickets.length; i++) {
+      const command = new SendMessageCommand({
+        QueueUrl: queue_url,
+        MessageBody: JSON.stringify(i)
+      })
+      const response = await client.send(command)
+      console.log(`Message sent with ID: ${response.MessageId}`);
 
-    // Prepare the batch write request
-    const params = {
-      RequestItems: {
-        Tickets: batch.map(ticket => ({
-          PutRequest: {
-            Item: ticket, 
-          },
-        })),
-      },
-    };
-
-    try {
-      // Send the batch write request
-      const command = new BatchWriteCommand(params);
-      const response = await docClient.send(command);
-
-      if (response.UnprocessedItems && Object.keys(response.UnprocessedItems).length > 0) {
-        console.warn("Some items were not processed. Retrying...");
-        // simple retry logic for unprocessed items
-        const retryParams = { RequestItems: response.UnprocessedItems };
-        await docClient.send(new BatchWriteCommand(retryParams));
-      }
-
-      console.log(`Successfully uploaded batch of ${batch.length} tickets`);
-    } catch (err) {
-      console.error(" Error uploading batch:", err.message);
     }
-
-    // small delay between batches to avoid throttling
-    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log('========ALL MSSGS PUSHED TO QUEUE========')
+  } catch (err) {
+    console.error("Error sending message to SQS:", err.message)
   }
 
-  console.log("All tickets uploaded to DynamoDB!");
 }
 
-uploadTickets();
+
+pushTicketsToQueue()

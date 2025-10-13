@@ -51,7 +51,7 @@ async function processTickets() {
             // Parse string to object
             const parsedReply = JSON.parse(rawReply);
 
-            console.log(parsedReply);
+            //console.log(parsedReply);
             finalresponse.push(parsedReply)
 
             //console.log(response.data);
@@ -85,6 +85,7 @@ async function processTickets() {
             c = c % allusers.length //keep cycling among the users i.e support agents
         }
     }
+    console.log(finalresponse)
     return finalresponse
 }
 
