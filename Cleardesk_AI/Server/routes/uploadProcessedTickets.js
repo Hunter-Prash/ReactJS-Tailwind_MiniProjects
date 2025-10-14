@@ -35,9 +35,10 @@ async function pushTicketsToQueue() {
     for (let i = 0; i < tickets.length; i++) {
       const command = new SendMessageCommand({
         QueueUrl: queue_url,
-        MessageBody: JSON.stringify(i)
+        MessageBody: JSON.stringify(tickets[i])
       })
       const response = await client.send(command)
+      //console.log(response)
       console.log(`Message sent with ID: ${response.MessageId}`);
 
     }
