@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, useAnimation } from 'framer-motion';
@@ -6,61 +6,64 @@ import { motion, useAnimation } from 'framer-motion';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [viewTickets, setViewTickets] = useState([]);
-
-  const [theme, setTheme] = useState(() => {
-    const saved = JSON.parse(sessionStorage.getItem('theme'));
-    return saved ?? false; // false = light, true = dark
-  });
-
+  const [theme, setTheme] = useState(() => JSON.parse(sessionStorage.getItem('theme')) ?? false); // false = light, true = dark
   const controls = useAnimation();
+  const pipelineHasRun = useRef(false); // <-- ensures pipeline runs only once
 
+  // ---------------- API CALLS ----------------
   const fetchTicketsFromS3 = async () => {
-    console.log("[FETCH] Requesting tickets from S3 via /api/fetch...");
+    console.log("[FETCH] Requesting tickets from S3...");
     const res = await axios.get("http://localhost:5000/api/fetch");
-    return res.data; 
+    console.log(`[FETCH] Fetched ${res.data.tickets?.length || 0} tickets.`);
+    return res.data;
   };
 
-  const uploadTicketsToSQS = async () => {
-    console.log("[UPLOAD] Uploading processed tickets to SQS via /api/uploadSQS...");
+  const uploadTicketsToSQS = async (tickets) => {
+    if (!tickets || tickets.length === 0) return;
+    console.log("[UPLOAD] Uploading tickets to SQS...");
     const res = await axios.get("http://localhost:5000/api/uploadSQS");
     console.log("[UPLOAD] SQS upload complete:", res.data);
     return res.data;
   };
 
   const consumeTicketsToDynamoDB = async () => {
-    console.log("[CONSUME] Consuming tickets from SQS → DynamoDB via /api/consumeTickets...");
+    console.log("[CONSUME] Consuming tickets from SQS → DynamoDB...");
     const res = await axios.get("http://localhost:5000/api/consumeTickets");
-    console.log(`[CONSUME] DynamoDB write complete. `);
+    console.log("[CONSUME] DynamoDB write complete.");
     return res.data;
   };
 
-useEffect(() => {
-  const runPipeline = async () => {
-    try {
-      console.log("[INIT] Starting ticket pipeline...");
-
-      // Step 1: fetch
-      const fetchRes = await fetchTicketsFromS3();
-
-      // Step 2: upload
-      const uploadRes = await uploadTicketsToSQS();
-
-      // Step 3: consume
-      const consumeRes = await consumeTicketsToDynamoDB();
-
-      console.log("[SUCCESS] Pipeline finished successfully!");
-      setViewTickets(fetchRes.data.tickets);
-
-    } catch (err) {
-      console.error("[ERROR] Pipeline failed:", err.message);
-    }
-  };
-
-  runPipeline();
-}, []);
-
+  // ---------------- PIPELINE ----------------
   useEffect(() => {
-    // start background animation loop
+    if (pipelineHasRun.current) return; // <-- skip if already run
+    pipelineHasRun.current = true;
+
+    const runPipeline = async () => {
+      try {
+        console.log("[INIT] Starting sequential ticket pipeline...");
+
+        // Step 1: Fetch tickets from S3
+        const fetchData = await fetchTicketsFromS3();
+
+        // Step 2: Upload tickets to SQS
+        await uploadTicketsToSQS(fetchData.tickets);
+
+        // Step 3: Consume tickets from SQS → DynamoDB
+        await consumeTicketsToDynamoDB();
+
+        console.log("[SUCCESS] Pipeline completed successfully!");
+        setViewTickets(fetchData.tickets);
+
+      } catch (err) {
+        console.error("[ERROR] Pipeline failed:", err.message);
+      }
+    };
+
+    runPipeline();
+  }, []);
+
+  // ---------------- Background animation ----------------
+  useEffect(() => {
     const loopAnimation = async () => {
       while (true) {
         await controls.start({
@@ -78,7 +81,7 @@ useEffect(() => {
     navigate('/');
   };
 
-  // Theme classes
+  // ---------------- Theme classes ----------------
   const containerClass = theme
     ? 'min-h-screen text-gray-100 relative overflow-hidden'
     : 'min-h-screen text-gray-900 relative overflow-hidden';
@@ -99,6 +102,7 @@ useEffect(() => {
     ? 'linear-gradient(270deg, #1e3a8a, #1e40af, #0f172a)'
     : 'linear-gradient(270deg, #a5b4fc, #c7d2fe, #e0e7ff)';
 
+  // ---------------- Render ----------------
   return (
     <motion.div
       className={containerClass}
@@ -108,9 +112,7 @@ useEffect(() => {
         backgroundSize: '200% 200%',
       }}
     >
-      {/* Overlay for extra contrast */}
       <div className={`absolute inset-0 ${theme ? 'bg-black/30' : 'bg-white/40'} backdrop-blur-sm`} />
-
       <div className="relative z-10 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className={titleClass}>Tickets Dashboard</h1>
@@ -119,7 +121,6 @@ useEffect(() => {
           >
             View Detailed Analytics
           </button>
-
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded transition-colors duration-300"
@@ -146,15 +147,9 @@ useEffect(() => {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
                 <h2 className={ticketTitleClass}>{ticket.title}</h2>
-                <p className="mb-1">
-                  <strong>ID:</strong> {ticket.id}
-                </p>
-                <p className="mb-1">
-                  <strong>Description:</strong> {ticket.description}
-                </p>
-                <p className="text-sm opacity-80">
-                  <strong>Date:</strong> {ticket.date}
-                </p>
+                <p className="mb-1"><strong>ID:</strong> {ticket.id}</p>
+                <p className="mb-1"><strong>Description:</strong> {ticket.description}</p>
+                <p className="text-sm opacity-80"><strong>Date:</strong> {ticket.date}</p>
               </motion.div>
             ))
           )}
