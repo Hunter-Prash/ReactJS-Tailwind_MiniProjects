@@ -14,17 +14,50 @@ const Dashboard = () => {
 
   const controls = useAnimation();
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        let response = await axios.get('http://localhost:5000/api/fetch');
-        setViewTickets(response.data.tickets);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    fetchTickets();
-  }, []);
+  const fetchTicketsFromS3 = async () => {
+    console.log("[FETCH] Requesting tickets from S3 via /api/fetch...");
+    const res = await axios.get("http://localhost:5000/api/fetch");
+    return res.data; 
+  };
+
+  const uploadTicketsToSQS = async () => {
+    console.log("[UPLOAD] Uploading processed tickets to SQS via /api/uploadSQS...");
+    const res = await axios.get("http://localhost:5000/api/uploadSQS");
+    console.log("[UPLOAD] SQS upload complete:", res.data);
+    return res.data;
+  };
+
+  const consumeTicketsToDynamoDB = async () => {
+    console.log("[CONSUME] Consuming tickets from SQS → DynamoDB via /api/consumeTickets...");
+    const res = await axios.get("http://localhost:5000/api/consumeTickets");
+    console.log(`[CONSUME] DynamoDB write complete. `);
+    return res.data;
+  };
+
+useEffect(() => {
+  const runPipeline = async () => {
+    try {
+      console.log("[INIT] Starting ticket pipeline...");
+
+      // Step 1: fetch
+      const fetchRes = await fetchTicketsFromS3();
+
+      // Step 2: upload
+      const uploadRes = await uploadTicketsToSQS();
+
+      // Step 3: consume
+      const consumeRes = await consumeTicketsToDynamoDB();
+
+      console.log("[SUCCESS] Pipeline finished successfully!");
+      setViewTickets(fetchRes.data.tickets);
+
+    } catch (err) {
+      console.error("[ERROR] Pipeline failed:", err.message);
+    }
+  };
+
+  runPipeline();
+}, []);
 
   useEffect(() => {
     // start background animation loop

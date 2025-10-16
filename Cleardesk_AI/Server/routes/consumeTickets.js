@@ -11,7 +11,7 @@ import {
 	DynamoDBDocumentClient,
 	PutCommand
 } from "@aws-sdk/lib-dynamodb";
-
+import express from 'express'
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +20,8 @@ const __dirname = dirname(__filename);
 dotenv.config({
 	path: path.resolve(__dirname, "../../Credentials/DynamoDB.env"),
 });
+
+const router=express.Router()
 
 const sqsClient = new SQSClient({
 	region: process.env.AWS_REGION,
@@ -38,12 +40,11 @@ const dbclient = new DynamoDBClient({
 });
 const docClient = DynamoDBDocumentClient.from(dbclient);
 
-const queue_url =
-	"https://sqs.ap-south-1.amazonaws.com/345594574524/ProcessedTicketsQueue";
+const queue_url ="https://sqs.ap-south-1.amazonaws.com/345594574524/ProcessedTicketsQueue";
 
 let dbTickets = []; // local array to store processed tickets
 
-//===== Consume tickets from SQS========
+
 async function consumeMessages() {
 	console.log("--- Listening for messages from SQS...");
 
@@ -125,10 +126,31 @@ async function writeToDb() {
         console.log("All tickets processed for DynamoDB upload.");
     }
 }
+//===== Consume tickets from SQS========
 
+router.get("/consumeTickets", async (req, res) => {
+	try {
+		console.log("Starting SQS → DynamoDB pipeline...");
 
-//===== Main flow =====
-(async () => {
-	await consumeMessages();
-	await writeToDb();
-})();
+		dbTickets = []; // clear previous tickets
+
+		await consumeMessages();  // step 1: fetch messages from SQS
+		await writeToDb();        // step 2: push to DynamoDB
+
+		console.log("Pipeline completed successfully");
+		res.status(200).json({
+			status: "success",
+			message: "Tickets consumed and written to DynamoDB successfully",
+			count: dbTickets.length,
+		});
+	} catch (err) {
+		console.error("[ERROR] Pipeline failed:", err.message);
+		res.status(500).json({
+			status: "error",
+			message: "Failed to consume or upload tickets",
+			error: err.message,
+		});
+	}
+});
+
+export default router;
