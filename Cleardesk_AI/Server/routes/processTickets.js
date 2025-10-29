@@ -1,11 +1,11 @@
 import fs from 'fs';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid'
 
-
-//const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\tickets.json';
-//const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\tickets.json'
+const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 let finalresponse = []//to store the response of all tickets after processing
-let allusers = []// variable to store total number of support agents by scanning all users in the dynamo db table
+let allusers = []// variable to store total number of support agents by scanning all users in the dynamo db table for round-robin
 
 async function nlp(ticket) {
     try {
@@ -40,18 +40,16 @@ async function processTickets() {
                 prompt: JSON.stringify(processedBatch)
             });
 
+
             //Basically,  AI response is a string containing JSON, not a JSON object yet.so it contains lot of \n and other esacpe characters..
             //so we need to parse it..
-
             let rawReply = response.data.reply;
-
             // Remove Markdown-style ```json if present
             rawReply = rawReply.replace(/^```json\s*/, '').replace(/```$/, '');
-
             // Parse string to object
             const parsedReply = JSON.parse(rawReply);
 
-           
+
             finalresponse.push(parsedReply)
 
             //console.log(response.data);
@@ -69,22 +67,26 @@ async function processTickets() {
     // flatten batched responses
     finalresponse = finalresponse.flat();
 
-    // assign globally unique IDs
-    let globalId = 0;
-    finalresponse = finalresponse.map(ticket => ({
-        id: globalId++,
-        ...ticket
-    }));
+    // assign UUIDS to tickets
+    for (let i = 0; i < finalresponse.length; i++) {
+        finalresponse[i] = {
+            ...finalresponse[i],
+            id: uuidv4()
+        };
+    }
+
 
     //round-robin the tickets among support agents
-    let c = 0
+    let c = 0;
     for (let i = 0; i < finalresponse.length; i++) {
-        finalresponse[i]['userQueue'] = allusers[c].email //adding a new attribute to the gemini response
-        c = c + 1
-        if (c >= allusers.length) {
-            c = c % allusers.length //keep cycling among the users i.e support agents
-        }
+        finalresponse[i] = {
+            ...finalresponse[i],
+            userQueue: allusers[c].email, // add new field
+        };
+
+        c = (c + 1) % allusers.length; // cycle through support agents
     }
+
     console.log(finalresponse)
     return finalresponse
 }

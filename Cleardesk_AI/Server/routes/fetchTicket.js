@@ -2,7 +2,7 @@ import { S3Client, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/clien
 import dotenv from "dotenv";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import express, { Router } from "express";
+import express from "express";
 import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,8 +14,8 @@ dotenv.config({
 
 const router = express.Router();
 
-const filepath =
-  "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\lastprocessed.json";
+const filepath = "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\lastprocessed.json";
+const filepath2 = "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\tickets.json";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -29,7 +29,7 @@ router.get("/fetch", async (req, res) => {
   try {
     let tickets = [];
 
-    // Read checkpoint (file always exists)
+    // File always exists
     const content = fs.readFileSync(filepath, "utf-8").trim();
     const isColdStart = content.length === 0;
     const lastProcessed = isColdStart ? null : new Date(JSON.parse(content));
@@ -41,8 +41,7 @@ router.get("/fetch", async (req, res) => {
 
     const listResponse = await s3.send(listCommand);
 
-
-    //--------COLD START----------
+    // ---- COLD START ----
     if (isColdStart) {
       console.log("Cold start: fetching all tickets");
       for (const obj of listResponse.Contents) {
@@ -54,9 +53,10 @@ router.get("/fetch", async (req, res) => {
         const jsonString = await response.Body.transformToString();
         tickets.push(JSON.parse(jsonString));
       }
-    } 
-    
-    //-------INCREMENTAL FETCH---------
+      fs.writeFileSync(filepath2, JSON.stringify(tickets, null, 2));
+    }
+
+    // ---- INCREMENTAL FETCH ----
     else {
       console.log(`Incremental fetch: after ${lastProcessed.toISOString()}`);
       for (const obj of listResponse.Contents) {
@@ -70,10 +70,15 @@ router.get("/fetch", async (req, res) => {
           tickets.push(JSON.parse(jsonString));
         }
       }
+
+      if(tickets.length!==0)fs.appendFileSync(filepath2, JSON.stringify(tickets, null, 2));
+      else if(tickets.length===0){
+        console.log(`No new tickets added after ${new Date(lastProcessed)}`)
+      }
     }
 
     return res.status(200).json({
-      message: "Incremental Tickets fetched successfully",
+      message: "Tickets fetched successfully",
       tickets,
     });
   } catch (error) {
