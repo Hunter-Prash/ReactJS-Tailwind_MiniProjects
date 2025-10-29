@@ -1,0 +1,6 @@
+{
+  "title": "Password reset link expired",
+  "description": "The password reset link sent via email expires within 5 minutes, even though it should be 30.",
+  "status": "open",
+  "createdAt": "2025-10-07T13:30:00Z"
+}

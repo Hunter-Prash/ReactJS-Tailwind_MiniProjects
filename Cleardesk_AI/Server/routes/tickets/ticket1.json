@@ -1,0 +1,6 @@
+{
+  "title": "Login not working",
+  "description": "User cannot log in with correct credentials. After submitting the username and password, the page refreshes without error, but the user is redirected back to the login screen.",
+  "status": "open",
+  "createdAt": "2025-10-01T09:15:00Z"
+}

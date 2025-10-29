@@ -1,0 +1,6 @@
+{
+  "title": "Analytics page showing stale data",
+  "description": "The analytics page shows data from the previous day and doesn't refresh even after multiple reloads.",
+  "status": "open",
+  "createdAt": "2025-10-09T14:10:00Z"
+}

@@ -1,0 +1,6 @@
+{
+  "title": "Attachment upload failed",
+  "description": "Users cannot upload files larger than 5 MB even though the limit is set to 10 MB.",
+  "status": "open",
+  "createdAt": "2025-10-05T15:00:00Z"
+}

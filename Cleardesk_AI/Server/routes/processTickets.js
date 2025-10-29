@@ -2,8 +2,8 @@ import fs from 'fs';
 import axios from 'axios';
 
 
-const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\tickets.json';
-const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+//const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\tickets.json';
+//const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 let finalresponse = []//to store the response of all tickets after processing
 let allusers = []// variable to store total number of support agents by scanning all users in the dynamo db table
 
@@ -51,7 +51,7 @@ async function processTickets() {
             // Parse string to object
             const parsedReply = JSON.parse(rawReply);
 
-            //console.log(parsedReply);
+           
             finalresponse.push(parsedReply)
 
             //console.log(response.data);

@@ -1,0 +1,6 @@
+{
+  "title": "Search results not updating",
+  "description": "When users search for a keyword, the results page doesn't update unless they refresh manually.",
+  "status": "open",
+  "createdAt": "2025-10-03T10:05:00Z"
+}

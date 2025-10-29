@@ -1,0 +1,6 @@
+{
+  "title": "Payment gateway timeout",
+  "description": "Users are experiencing timeout errors when processing credit card payments. It happens intermittently and seems to affect users from the EU region.",
+  "status": "open",
+  "createdAt": "2025-10-02T12:45:00Z"
+}

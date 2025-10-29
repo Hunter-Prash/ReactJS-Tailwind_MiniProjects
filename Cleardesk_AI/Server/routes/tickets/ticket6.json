@@ -1,0 +1,6 @@
+{
+  "title": "Dashboard not loading for new users",
+  "description": "Newly registered users see a blank screen on the dashboard page.",
+  "status": "open",
+  "createdAt": "2025-10-06T11:45:00Z"
+}
