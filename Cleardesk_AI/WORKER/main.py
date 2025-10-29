@@ -35,17 +35,16 @@ For every ticket, generate a JSON object with exactly the following structure:
   },
   "metadata": {
       "status": "<string>",
-      "createdAt": "<ISO8601 timestamp>",
+      "createdAt": "<ISO8601 timestamp>"
   },
-  "sentiment": "<positive|neutral|negative|angry|frustrated>",
+  "sentiment": "<positive|neutral|negative|angry|frustrated>"
 }
 
 Instructions:
-1. Only output valid JSON. Do not include explanations or extra text.
-2. Base summary, sentiment, rootCause entirely on the ticket content.
-3. Maintain original id, title, status, createdAt, and assignedTo.
-4. Include all fields even if some are empty; do not omit any.
-5. You will get tickets in batches of a particular size so respond to each ticket with the above structure
+1. Only output valid JSON — no extra text or explanations.
+2. Base summary, sentiment, and classification entirely on the ticket content.
+3. Maintain the original title, status, and createdAt values.
+4. Always include all fields, even if empty.
 """
     )
 )
@@ -56,12 +55,12 @@ app=FastAPI()
 
 # Define a model that matches the JSON payload
 class TicketRequest(BaseModel):
-    id: int
+
     title: str
     description: str
     status: str
     createdAt: str
-    assignedTo: str
+    
     
 class ChatRequest(BaseModel):
     prompt:str
@@ -108,7 +107,6 @@ def handle_nlp(request: TicketRequest):
         "metadata":{
             "status":request.status,
             "createdAt": request.createdAt,
-            "assignedTo": request.assignedTo
         }
     }
 

@@ -24,8 +24,7 @@ const sqsClient = new SQSClient({
   },
 });
 
-const QUEUE_URL =
-  "https://sqs.ap-south-1.amazonaws.com/345594574524/ProcessedTicketsQueue";
+const QUEUE_URL ="https://sqs.ap-south-1.amazonaws.com/345594574524/Tickets-Queue"
 
 // ---------- Core Logic: Push tickets to SQS ----------
 async function pushTicketsToSQS() {

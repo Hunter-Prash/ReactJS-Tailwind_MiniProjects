@@ -14,9 +14,17 @@ dotenv.config({
 
 const router = express.Router();
 
-const filepath = "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\lastprocessed.json";
-const filepath2 = "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\tickets.json";
+const checkpointsDir = "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints";
+const filepath2 = path.join(checkpointsDir, "lastprocessed.json");
+const filepath1 = path.join(checkpointsDir, "tickets.json");
 
+// Ensure checkpoint folder exists
+if (!fs.existsSync(checkpointsDir)) {
+  fs.mkdirSync(checkpointsDir, { recursive: true });
+  console.log("[INIT] Created checkpoints directory");
+}
+
+// Initialize S3
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -28,12 +36,14 @@ const s3 = new S3Client({
 router.get("/fetch", async (req, res) => {
   try {
     let tickets = [];
+    console.log("---PIPELINE START----");
 
-    // File always exists
-    const content = fs.readFileSync(filepath, "utf-8").trim();
+    // Read last processed timestamp (if exists)
+    const content = fs.existsSync(filepath2) ? fs.readFileSync(filepath2, "utf-8").trim() : "";
     const isColdStart = content.length === 0;
     const lastProcessed = isColdStart ? null : new Date(JSON.parse(content));
 
+    // List all objects in S3
     const listCommand = new ListObjectsV2Command({
       Bucket: "tickets-bucket-amzn-s3",
       Prefix: "tickets/",
@@ -43,8 +53,8 @@ router.get("/fetch", async (req, res) => {
 
     // ---- COLD START ----
     if (isColdStart) {
-      console.log("Cold start: fetching all tickets");
-      for (const obj of listResponse.Contents) {
+      console.log("[COLD START] Fetching all tickets...");
+      for (const obj of listResponse.Contents || []) {
         const getCommand = new GetObjectCommand({
           Bucket: "tickets-bucket-amzn-s3",
           Key: obj.Key,
@@ -53,36 +63,44 @@ router.get("/fetch", async (req, res) => {
         const jsonString = await response.Body.transformToString();
         tickets.push(JSON.parse(jsonString));
       }
-      fs.writeFileSync(filepath2, JSON.stringify(tickets, null, 2));
+
+      fs.writeFileSync(filepath1, JSON.stringify(tickets, null, 2));
+      console.log(`[COLD START] Stored ${tickets.length} tickets.`);
     }
 
     // ---- INCREMENTAL FETCH ----
-    else {
-      console.log(`Incremental fetch: after ${lastProcessed.toISOString()}`);
-      for (const obj of listResponse.Contents) {
-        if (new Date(obj.LastModified) > lastProcessed) {
-          const getCommand = new GetObjectCommand({
-            Bucket: "tickets-bucket-amzn-s3",
-            Key: obj.Key,
-          });
-          const response = await s3.send(getCommand);
-          const jsonString = await response.Body.transformToString();
-          tickets.push(JSON.parse(jsonString));
-        }
-      }
-
-      if(tickets.length!==0)fs.appendFileSync(filepath2, JSON.stringify(tickets, null, 2));
-      else if(tickets.length===0){
-        console.log(`No new tickets added after ${new Date(lastProcessed)}`)
-      }
+    // ---- INCREMENTAL FETCH ----
+else {
+  console.log(`[INCREMENTAL] Fetching tickets after ${lastProcessed.toISOString()}`);
+  for (const obj of listResponse.Contents || []) {
+    if (new Date(obj.LastModified) > lastProcessed) {
+      const getCommand = new GetObjectCommand({
+        Bucket: "tickets-bucket-amzn-s3",
+        Key: obj.Key,
+      });
+      const response = await s3.send(getCommand);
+      const jsonString = await response.Body.transformToString();
+      tickets.push(JSON.parse(jsonString));
     }
+  }
+
+  if (tickets.length > 0) {
+    // Overwrite the file instead of merging
+    fs.writeFileSync(filepath1, JSON.stringify(tickets, null, 2));
+    console.log(`[INCREMENTAL] Overwrote tickets.json with ${tickets.length} new tickets.`);
+  } else {
+    console.log(`[INCREMENTAL] No new tickets after ${lastProcessed.toISOString()}`);
+  }
+}
+
 
     return res.status(200).json({
       message: "Tickets fetched successfully",
+      count: tickets.length,
       tickets,
     });
   } catch (error) {
-    console.error("Error fetching tickets:", error);
+    console.error("❌ Error fetching tickets:", error);
     return res.status(500).json({
       message: "Error fetching tickets from S3",
       error: error.message,

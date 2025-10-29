@@ -3,7 +3,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid'
 
 const filePath = 'D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\tickets.json'
-const allTickets = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+const allTickets = fs.readFileSync(filePath, 'utf-8')===''?[]:JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 let finalresponse = []//to store the response of all tickets after processing
 let allusers = []// variable to store total number of support agents by scanning all users in the dynamo db table for round-robin
 

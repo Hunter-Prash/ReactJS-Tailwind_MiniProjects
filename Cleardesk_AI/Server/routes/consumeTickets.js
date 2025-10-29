@@ -12,7 +12,7 @@ import {
 	PutCommand
 } from "@aws-sdk/lib-dynamodb";
 import express from 'express'
-
+import fs from 'fs'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -40,7 +40,7 @@ const dbclient = new DynamoDBClient({
 });
 const docClient = DynamoDBDocumentClient.from(dbclient);
 
-const queue_url ="https://sqs.ap-south-1.amazonaws.com/345594574524/ProcessedTicketsQueue";
+const queue_url ="https://sqs.ap-south-1.amazonaws.com/345594574524/Tickets-Queue"
 
 let dbTickets = []; // local array to store processed tickets
 
@@ -123,10 +123,13 @@ async function writeToDb() {
     } catch (err) {
         console.error(`[ERROR] Error uploading to DynamoDB:`, err.message);
     } finally {
-        console.log("All tickets processed for DynamoDB upload.");
+		//update the last processed timestamps
+		const filepath = "D:\\Frontend Projects\\ReactJS-Tailwind_MiniProjects\\Cleardesk_AI\\Server\\checkpoints\\lastprocessed.json";
+		const currTimeStamp=new Date().toISOString()
+		fs.writeFileSync(filepath, JSON.stringify(currTimeStamp));
+
     }
 }
-//===== Consume tickets from SQS========
 
 router.get("/consumeTickets", async (req, res) => {
 	try {
