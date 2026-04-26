@@ -5,42 +5,112 @@
       "title": "Elden Ring",
       "genre": "Action RPG",
       "rating": 4.9,
-      "image": "/images/elden-ring.jpg"
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg"
     },
     {
       "id": 2,
       "title": "God of War Ragnarok",
       "genre": "Action Adventure",
       "rating": 4.8,
-      "image": "/images/god-of-war-ragnarok.jpg"
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2322010/header.jpg"
     },
     {
       "id": 3,
       "title": "Hades",
       "genre": "Roguelike",
       "rating": 4.7,
-      "image": "/images/hades.jpg"
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1145360/header.jpg"
     },
     {
       "id": 4,
       "title": "Forza Horizon 5",
       "genre": "Racing",
       "rating": 4.6,
-      "image": "/images/forza-horizon-5.jpg"
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1551360/header.jpg"
     },
     {
       "id": 5,
       "title": "Minecraft",
       "genre": "Sandbox",
       "rating": 4.8,
-      "image": "/images/minecraft.jpg"
+      "image": "https://store-images.s-microsoft.com/image/apps.58378.13850085746326678.826cc014-d610-46af-bdb3-c5c96be4d22c.64287a91-c69e-4723-bb61-03fecd348c2a?h=270&q=90&w=480"
     },
     {
       "id": 6,
       "title": "Valorant",
       "genre": "FPS",
       "rating": 4.5,
-      "image": "/images/valorant.jpg"
+      "image": "https://store-images.s-microsoft.com/image/apps.12.13898029070941789.aa82bb14-76e0-4eb1-a651-c4245633dc8e.d5f93021-0acb-488f-aa72-22a67937edca?h=270&q=90&w=480"
+    },
+    {
+      "id": 7,
+      "title": "Cyberpunk 2077",
+      "genre": "Open World RPG",
+      "rating": 4.7,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg"
+    },
+    {
+      "id": 8,
+      "title": "Red Dead Redemption 2",
+      "genre": "Open World Adventure",
+      "rating": 4.9,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg"
+    },
+    {
+      "id": 9,
+      "title": "Baldur's Gate 3",
+      "genre": "CRPG",
+      "rating": 4.9,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1086940/header.jpg"
+    },
+    {
+      "id": 10,
+      "title": "Sekiro: Shadows Die Twice",
+      "genre": "Action Adventure",
+      "rating": 4.8,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/814380/header.jpg"
+    },
+    {
+      "id": 11,
+      "title": "The Witcher 3: Wild Hunt",
+      "genre": "Fantasy RPG",
+      "rating": 4.9,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg"
+    },
+    {
+      "id": 12,
+      "title": "Resident Evil 4",
+      "genre": "Survival Horror",
+      "rating": 4.8,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2050650/header.jpg"
+    },
+    {
+      "id": 13,
+      "title": "Hollow Knight",
+      "genre": "Metroidvania",
+      "rating": 4.8,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/367520/header.jpg"
+    },
+    {
+      "id": 14,
+      "title": "Stardew Valley",
+      "genre": "Farming Sim",
+      "rating": 4.9,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/413150/header.jpg"
+    },
+    {
+      "id": 15,
+      "title": "Apex Legends",
+      "genre": "Battle Royale",
+      "rating": 4.4,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1172470/header.jpg"
+    },
+    {
+      "id": 16,
+      "title": "Monster Hunter: World",
+      "genre": "Action RPG",
+      "rating": 4.7,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg"
     }
   ]
 }

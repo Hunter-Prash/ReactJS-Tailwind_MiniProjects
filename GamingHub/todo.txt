@@ -28,7 +28,8 @@ On radio change → update state
 Show only matching games
 Important concept:
 
-👉 Derived state (don’t store filtered list separately)
+
+
 
 🧾 3. GAME CARD (Component mindset)
 Actions:
@@ -37,6 +38,10 @@ Add "Add to Cart" button
 What to practice:
 Passing props
 Event handling
+
+
+
+
 🛒 4. CART SYSTEM (GLOBAL STATE)
 Actions:
 Create a global cart state (Context)
@@ -45,6 +50,9 @@ Critical concept:
 
 👉 Use functional updates
 Because state depends on previous value
+
+
+
 
 💾 5. LOCAL STORAGE (Persistence)
 Actions:
@@ -68,6 +76,8 @@ Important learning:
 Actions:
 Show selected game details
 Add Review Section
+
+
 ✍️ 8. REVIEW FORM
 Actions:
 Create form with:

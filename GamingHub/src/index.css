@@ -1,1 +1,53 @@
 @import "tailwindcss";
+
+:root {
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    background:
+        radial-gradient(circle at top, rgba(20, 184, 166, 0.18), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.2), transparent 22%),
+        linear-gradient(180deg, #07111f 0%, #091423 48%, #050b15 100%);
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+.gaming-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 80%);
+    opacity: 0.22;
+}
+
+.gaming-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0.6;
+}
+
+.gaming-orb-left {
+    left: -120px;
+    top: 80px;
+    height: 280px;
+    width: 280px;
+    background: rgba(34, 211, 238, 0.18);
+}
+
+.gaming-orb-right {
+    right: -80px;
+    top: 20px;
+    height: 240px;
+    width: 240px;
+    background: rgba(99, 102, 241, 0.2);
+}
