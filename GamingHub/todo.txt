@@ -1,0 +1,78 @@
+You are building:
+👉 A small app where users browse PC games, filter them, view details, add to cart, and write reviews.
+
+🧭 PAGE FLOW (IMPORTANT)
+Home Page → list + filter
+Game Details Page → info + review
+Cart Page → saved items
+
+🏠 1. HOME PAGE (Core Logic Page)
+Actions you must implement:
+Create a games array
+Display games using map()
+
+Add a genre filter (radio buttons)
+What you're practicing:
+map vs forEach
+controlled inputs (radio)
+state updates
+Key thinking:
+
+👉 Filtering should NOT mutate original data
+👉 Derive filtered list from state
+
+🎯 2. FILTER LOGIC (inside Home)
+Actions:
+Create state: selected genre
+On radio change → update state
+Show only matching games
+Important concept:
+
+👉 Derived state (don’t store filtered list separately)
+
+🧾 3. GAME CARD (Component mindset)
+Actions:
+Show game name, genre
+Add "Add to Cart" button
+What to practice:
+Passing props
+Event handling
+🛒 4. CART SYSTEM (GLOBAL STATE)
+Actions:
+Create a global cart state (Context)
+Add item to cart on button click
+Critical concept:
+
+👉 Use functional updates
+Because state depends on previous value
+
+💾 5. LOCAL STORAGE (Persistence)
+Actions:
+When cart changes → save to localStorage
+On app load → load from localStorage
+Why:
+
+👉 Fix refresh problem (you already noted this)
+
+🔁 6. NAVIGATION (React Router)
+Actions:
+Add navigation:
+Home → Cart
+Home → Game Details
+Important learning:
+
+👉 Don’t rely on navigation state for data
+👉 Use context instead
+
+📄 7. GAME DETAILS PAGE
+Actions:
+Show selected game details
+Add Review Section
+✍️ 8. REVIEW FORM
+Actions:
+Create form with:
+username input
+textarea (multi-line review)
+Concepts:
+Controlled components
+Object state handling

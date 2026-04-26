@@ -1,0 +1,46 @@
+{
+  "games": [
+    {
+      "id": 1,
+      "title": "Elden Ring",
+      "genre": "Action RPG",
+      "rating": 4.9,
+      "image": "/images/elden-ring.jpg"
+    },
+    {
+      "id": 2,
+      "title": "God of War Ragnarok",
+      "genre": "Action Adventure",
+      "rating": 4.8,
+      "image": "/images/god-of-war-ragnarok.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Hades",
+      "genre": "Roguelike",
+      "rating": 4.7,
+      "image": "/images/hades.jpg"
+    },
+    {
+      "id": 4,
+      "title": "Forza Horizon 5",
+      "genre": "Racing",
+      "rating": 4.6,
+      "image": "/images/forza-horizon-5.jpg"
+    },
+    {
+      "id": 5,
+      "title": "Minecraft",
+      "genre": "Sandbox",
+      "rating": 4.8,
+      "image": "/images/minecraft.jpg"
+    },
+    {
+      "id": 6,
+      "title": "Valorant",
+      "genre": "FPS",
+      "rating": 4.5,
+      "image": "/images/valorant.jpg"
+    }
+  ]
+}
